@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Generator Lab - Digital Creator Lab</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: #080c14;
+            color: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: rgba(13, 18, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #06b6d4, #f97316);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #000;
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .logo-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #06b6d4, #ffffff, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .lang-select {
+            background: rgba(8, 12, 20, 0.9);
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            color: #67e8f9;
+            padding: 0.5rem 0.8rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lang-select:hover {
+            border-color: #06b6d4;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
+
+        .help-btn {
+            background: rgba(249, 115, 22, 0.15);
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            color: #ffedd5;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+
+        .help-btn:hover {
+            background: rgba(249, 115, 22, 0.3);
+            border-color: #f97316;
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .wa-badge {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Layout Main */
+        main {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            flex-grow: 1;
+        }
+
+        @media (min-width: 900px) {
+            main {
+                grid-template-columns: 7fr 5fr;
+            }
+        }
+
+        /* Cards Style */
+        .card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #d1d5db;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dot-cyan {
+            width: 8px;
+            height: 8px;
+            background-color: #06b6d4;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #06b6d4;
+        }
+
+        .dot-orange {
+            width: 8px;
+            height: 8px;
+            background-color: #f97316;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #f97316;
+        }
+
+        /* Grid Selection */
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .opt-btn {
+            background: rgba(8, 12, 20, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.85rem;
+            color: #d1d5db;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .opt-btn:hover {
+            border-color: rgba(6, 182, 212, 0.5);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .opt-btn.active-cyan {
+            border-color: #06b6d4;
+            background: rgba(6, 182, 212, 0.12);
+            color: #67e8f9;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+        }
+
+        .opt-btn.active-orange {
+            border-color: #f97316;
+            background: rgba(249, 115, 22, 0.12);
+            color: #ffedd5;
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.2);
+        }
+
+        /* Input */
+        .input-field {
+            width: 100%;
+            background: rgba(8, 12, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: #06b6d4;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
+
+        .quick-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .tag-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #9ca3af;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        /* Pulsante Genera */
+        .gen-btn {
+            width: 100%;
+            padding: 1.1rem;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(90deg, #06b6d4, #f97316);
+            color: #000;
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+            transition: all 0.2s;
+        }
+
+        .gen-btn:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 25px rgba(249, 115, 22, 0.5);
+        }
+
+        /* Output Column */
+        .output-card {
+            background: rgba(13, 19, 33, 0.9);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 18px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge-info {
+            font-size: 0.7rem;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.08);
+            color: #06b6d4;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .output-box {
+            background: #04070d;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.2rem;
+            font-size: 0.92rem;
+            color: #a5f3fc;
+            line-height: 1.6;
+            min-height: 140px;
+            max-height: 220px;
+            overflow-y: auto;
+            word-break: break-word;
+        }
+
+        .quote-box {
+            background: rgba(249, 115, 22, 0.08);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 0.88rem;
+            color: #ffedd5;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 12px;
+            border: none;
+            background: #06b6d4;
+            color: #000;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .copy-btn:hover {
+            background: #22d3ee;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+        }
+
+        /* Preset Item */
+        .preset-item {
+            background: rgba(8, 12, 20, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 0.85rem;
+            margin-bottom: 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-item:hover {
+            border-color: rgba(6, 182, 212, 0.4);
+            background: rgba(8, 12, 20, 0.9);
+        }
+
+        .preset-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 0.2rem;
+        }
+
+        .preset-desc {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #06b6d4;
+            color: #000;
+            font-weight: 800;
+            padding: 0.8rem 1.4rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Modal Guida Utente */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(4, 7, 13, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #0d1322;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            border-radius: 20px;
+            max-width: 580px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.8rem;
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.8rem;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #9ca3af;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 800;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .guide-step {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .guide-num {
+            background: linear-gradient(135deg, #06b6d4, #f97316);
+            color: #000;
+            font-weight: 800;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+
+        .guide-text h4 {
+            font-size: 0.9rem;
+            color: #f3f4f6;
+            margin-bottom: 0.2rem;
+        }
+
+        .guide-text p {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            line-height: 1.4;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-badge">DCL</div>
+            <div>
+                <div class="logo-title">Digital Creator Lab</div>
+                <div class="logo-subtitle" id="ui-subtitle">Generatore di Prompt Multilingua</div>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <!-- Selettore Lingua -->
+            <select class="lang-select" id="lang-picker" onchange="changeLanguage(this.value)">
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="fr">🇫🇷 Français</option>
+            </select>
+
+            <!-- Pulsante Guida Utente -->
+            <button class="help-btn" onclick="openModal()">
+                <span>❓</span> <span id="ui-btn-help">Guida Utente</span>
+            </button>
+
+            <a href="https://whatsapp.com/channel/0029Vb8tqXaB4hdRxxjPkp3C" target="_blank" rel="noopener noreferrer" class="wa-badge">
+                ⚡ <span id="ui-btn-wa">Canale WhatsApp</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Colonna Sinistra: Configurazione -->
+        <div>
+            <!-- 1. Piattaforma -->
+            <div class="card">
+                <div class="card-title" id="ui-step1-title">
+                    <span class="dot-cyan"></span> 1. Piattaforma Target
+                </div>
+                <div class="grid-options">
+                    <button class="opt-btn active-cyan" onclick="setPlatform(this, 'TikTok Video')">
+                        <span>🎵 TikTok Video</span>
+                    </button>
+                    <button class="opt-btn" onclick="setPlatform(this, 'Instagram Reel')">
+                        <span>📸 Instagram Reel</span>
+                    </button>
+                    <button class="opt-btn" onclick="setPlatform(this, 'Midjourney / Leonardo')">
+                        <span>🎨 Midjourney / AI</span>
+                    </button>
+                    <button class="opt-btn" onclick="setPlatform(this, 'Veo / Runway')">
+                        <span>📹 Veo / Runway</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Stile Visivo -->
+            <div class="card">
+                <div class="card-title" id="ui-step2-title">
+                    <span class="dot-orange"></span> 2. Stile Visivo & Atmosfera
+                </div>
+                <div class="grid-options">
+                    <button class="opt-btn active-orange" onclick="setStyle(this, 'Cinematografico')">
+                        <span id="ui-style-1">🎬 Cinematografico</span>
+                    </button>
+                    <button class="opt-btn" onclick="setStyle(this, 'Cyberpunk Neon')">
+                        <span id="ui-style-2">🤖 Cyberpunk Neon</span>
+                    </button>
+                    <button class="opt-btn" onclick="setStyle(this, 'Tropicale Paradisiaco')">
+                        <span id="ui-style-3">🌴 Paradisiaco</span>
+                    </button>
+                    <button class="opt-btn" onclick="setStyle(this, 'Minimal Tech')">
+                        <span id="ui-style-4">💻 Minimal Tech</span>
+                    </button>
+                    <button class="opt-btn" onclick="setStyle(this, 'Fotorealistico 8K')">
+                        <span id="ui-style-5">📸 Fotorealistico 8K</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Soggetto -->
+            <div class="card">
+                <div class="card-title" id="ui-step3-title">
+                    <span class="dot-cyan"></span> 3. Soggetto Principale
+                </div>
+                <div class="grid-options" style="margin-bottom: 1rem;">
+                    <button class="opt-btn active-cyan" onclick="setSubjectType(this, 'Workspace moderno')">
+                        <span id="ui-subj-1">🖥️ Postazione Tech</span>
+                    </button>
+                    <button class="opt-btn" onclick="setSubjectType(this, 'Caffè e Creatività')">
+                        <span id="ui-subj-2">☕ Caffè & Idee</span>
+                    </button>
+                    <button class="opt-btn" onclick="setSubjectType(this, 'Trasformazione Tech')">
+                        <span id="ui-subj-3">⚡ Magia Digitale</span>
+                    </button>
+                    <button class="opt-btn" onclick="setSubjectType(this, 'Paesaggio mozzafiato')">
+                        <span id="ui-subj-4">🌅 Paradiso Naturale</span>
+                    </button>
+                </div>
+
+                <!-- Campo di Testo Custom / Idea Utente -->
+                <div style="margin-top: 1rem;">
+                    <label for="custom-details" style="display: block; font-size: 0.8rem; font-weight: 700; color: #f97316; margin-bottom: 0.4rem;" id="ui-custom-prompt-label">✍️ La Tua Idea o Prompt Personalizzato:</label>
+                    <textarea id="custom-details" class="input-field" rows="3" style="resize: vertical; min-height: 80px;" placeholder="Scrivi qui la tua idea originale o i dettagli specifici..." oninput="generatePrompt()"></textarea>
+                </div>
+
+                <div class="quick-tags">
+                    <button class="tag-btn" onclick="appendDetail('con riflessi neon azzurro e arancione')">+ Neon Fluo</button>
+                    <button class="tag-btn" onclick="appendDetail('immerso in una spiaggia tropicale al tramonto')">+ Spiaggia Tropicale</button>
+                    <button class="tag-btn" onclick="appendDetail('con dettagli in slow motion ad alta definizione')">+ Slow Motion</button>
+                </div>
+            </div>
+
+            <button class="gen-btn" id="ui-btn-generate" onclick="generatePrompt()">⚡ Genera Prompt Completo</button>
+        </div>
+
+        <!-- Colonna Destra: Output e Modelli Pronti -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Risultato Generato -->
+            <div class="output-card">
+                <div class="output-header">
+                    <span style="font-size: 0.8rem; font-weight: 700; color: #06b6d4; text-transform: uppercase;" id="ui-out-title">Prompt Generato</span>
+                    <span id="active-tag" class="badge-info">TikTok Video • Cinematografico</span>
+                </div>
+
+                <div>
+                    <div style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.4rem; font-weight: 600;" id="ui-label-visual">VISUALE / SCENA:</div>
+                    <div id="output-prompt" class="output-box">
+                        Video verticale 9:16 in stile cinematografico ad alta risoluzione 8K. Una postazione di lavoro moderna e minimale con schermi ologrammatici trasparenti che mostrano metriche di crescita e grafici digitali. Sfondo scuro e suggestivo con illuminazione soffusa e accenti neon azzurro e arancione.
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size: 0.75rem; color: #f97316; margin-bottom: 0.4rem; font-weight: 600;" id="ui-label-quote">FRASE MOTIVAZIONALE DA SOVRAPPORRE:</div>
+                    <div id="output-quote" class="quote-box">
+                        "Dalle semplici idee digitali ai risultati reali. Trasforma la tua visione in realtà."
+                    </div>
+                </div>
+
+                <button class="copy-btn" id="ui-btn-copy" onclick="copyAll()">📋 Copia Tutto negli Appunti</button>
+            </div>
+
+            <!-- Modelli Pronti -->
+            <div class="card" style="margin-bottom: 0;">
+                <div class="card-title" id="ui-presets-title">🔥 Modelli Pronti</div>
+                
+                <div class="preset-item" onclick="loadPreset(0)">
+                    <div class="preset-title" id="ui-preset-1-t">1. Chiavetta USB Magica</div>
+                    <div class="preset-desc" id="ui-preset-1-d">Una chiavetta USB futuristica appoggiata su un piatto che si trasforma in una pietanza...</div>
+                </div>
+                
+                <div class="preset-item" onclick="loadPreset(1)">
+                    <div class="preset-title" id="ui-preset-2-t">2. L'Angolo di Paradiso Digitale</div>
+                    <div class="preset-desc" id="ui-preset-2-d">Una scrivania minimale di vetro posizionata su una spiaggia tropicale al tramonto...</div>
+                </div>
+
+                <div class="preset-item" onclick="loadPreset(2)">
+                    <div class="preset-title" id="ui-preset-3-t">3. Tazzina di Caffè & Particelle</div>
+                    <div class="preset-desc" id="ui-preset-3-d">Una tazzina di caffè espresso in ceramica dove dal vapore sorgono particelle luminose...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Guida Utente -->
+    <div class="modal-overlay" id="help-modal" onclick="closeModalOnOverlay(event)">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title" id="guide-modal-title">📖 Guida Utente - Prompt Generator Lab</div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+
+            <div class="guide-step">
+                <div class="guide-num">1</div>
+                <div class="guide-text">
+                    <h4 id="g-step1-t">Scegli la Piattaforma e lo Stile</h4>
+                    <p id="g-step1-d">Seleziona dove pubblicherai il contenuto (es. TikTok, Reel) e l'atmosfera visiva (es. Cinematografico, Cyberpunk Neon, Tropicale).</p>
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="guide-num">2</div>
+                <div class="guide-text">
+                    <h4 id="g-step2-t">Personalizza il Soggetto</h4>
+                    <p id="g-step2-d">Scegli l'idea principale e aggiungi dettagli specifici nel campo di testo o usando i tag rapidi (es. +Neon Fluo, +Slow Motion).</p>
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="guide-num">3</div>
+                <div class="guide-text">
+                    <h4 id="g-step3-t">Scegli la Lingua Preferita</h4>
+                    <p id="g-step3-d">Usa il selettore in alto a destra per cambiare lingua in qualsiasi momento (Italiano, Inglese, Spagnolo, Francese). Tutto l'editor e il prompt si aggiorneranno all'istante!</p>
+                </div>
+            </div>
+
+            <div class="guide-step">
+                <div class="guide-num">4</div>
+                <div class="guide-text">
+                    <h4 id="g-step4-t">Genera e Copia</h4>
+                    <p id="g-step4-d">Clicca su "Genera Prompt Completo", premi "Copia Tutto" e incolla il testo direttamente nella tua app AI preferita (es. Leonardo, Bing, Veo, Runway).</p>
+                </div>
+            </div>
+
+            <button class="gen-btn" style="margin-top: 0.5rem;" onclick="closeModal()" id="g-close-btn">Capito, iniziamo!</button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">✓ Contenuto copiato negli appunti!</div>
+
+    <footer>
+        Digital Creator Lab © 2026 • Generatore di Contenuti e Prompt Multilingua
+    </footer>
+
+    <script>
+        let currentLang = 'it';
+        let selectedPlatform = 'TikTok Video';
+        let selectedStyle = 'Cinematografico';
+        let selectedSubject = 'Workspace moderno';
+
+        // Oggetto templates per la generazione dinamica del prompt e delle frasi motivazionali
+        const templates = {
+            it: {
+                subj: {
+                    'Workspace moderno': 'Video verticale 9:16 ad alta risoluzione. Una postazione di lavoro moderna e minimale con schermi ologrammatici trasparenti e metriche di crescita',
+                    'Caffè e Creatività': 'Inquadratura macro 9:16. Una tazzina di caffè espresso in ceramica dove dal vapore sorgono particelle luminose e nodi digitali',
+                    'Trasformazione Tech': 'Scena verticale 9:16 ad alto impatto. Una chiavetta USB metallica appoggiata su un piatto che si trasforma in una pietanza scenografica',
+                    'Paesaggio mozzafiato': 'Inquadratura panoramica 9:16. Una scrivania in vetro minimale posizionata sulla sabbia di una spiaggia tropicale al tramonto'
+                },
+                style: {
+                    'Cinematografico': 'in stile cinematografico con profondità di campo ridotta e luci soffuse.',
+                    'Cyberpunk Neon': 'in stile cyberpunk con vivaci riflessi neon azzurri e arancioni e atmosfera futuristica.',
+                    'Tropicale Paradisiaco': 'immerso in un atmosfera tropicale paradisiaca con luce dorata del tramonto.',
+                    'Minimal Tech': 'con estetica tech minimale, linee pulite e illuminazione da studio.',
+                    'Fotorealistico 8K': 'dettagli iper-realistici in qualità 8k, illuminazione naturale e texture nitide.'
+                },
+                quotes: [
+                    '"Dalle idee digitali ai risultati reali. Trasforma la tua visione in realtà."',
+                    '"Inserisci la visione, servi l\'eccellenza. Crea ogni giorno."',
+                    '"Nutri la tua mente con grandi progetti e risultati concreti."',
+                    '"Trasforma un semplice dato in un capolavoro straordinario."',
+                    '"Lavora da dove vuoi. La libertà è lo strumento più potente."'
+                ]
+            },
+            en: {
+                subj: {
+                    'Workspace moderno': 'Vertical 9:16 video in high resolution. A modern minimal workspace with transparent holographic screens showing growth metrics',
+                    'Caffè e Creatività': 'Macro vertical 9:16 shot. A ceramic espresso cup where glowing particles and digital nodes rise from the steam',
+                    'Trasformazione Tech': 'High impact 9:16 vertical scene. A metallic USB drive placed on a plate transforming into a gourmet dish',
+                    'Paesaggio mozzafiato': 'Panoramic 9:16 view. A minimal glass desk placed on the sand of a tropical beach at sunset'
+                },
+                style: {
+                    'Cinematografico': 'cinematic style with shallow depth of field and soft lighting.',
+                    'Cyberpunk Neon': 'cyberpunk style with vibrant blue and orange neon highlights and futuristic mood.',
+                    'Tropicale Paradisiaco': 'set in a idyllic tropical beach setting with golden sunset lighting.',
+                    'Minimal Tech': 'minimal tech aesthetic, clean lines, and crisp studio illumination.',
+                    'Fotorealistico 8K': 'hyper-realistic details in 8k quality with natural lighting and sharp textures.'
+                },
+                quotes: [
+                    '"From digital ideas to real results. Turn your vision into reality."',
+                    '"Plug in the vision, serve excellence. Create every day."',
+                    '"Fuel your mind with ambitious projects and solid results."',
+                    '"Transform raw data into an extraordinary masterpiece."',
+                    '"Work from anywhere. Freedom is your most powerful tool."'
+                ]
+            },
+            es: {
+                subj: {
+                    'Workspace moderno': 'Video vertical 9:16 de alta resolución. Un espacio de trabajo moderno y minimalista con pantallas holográficas transparentes',
+                    'Caffè e Creatività': 'Toma macro vertical 9:16. Una taza de café expreso donde del vapor surgen partículas luminosas y nodos digitales',
+                    'Trasformazione Tech': 'Escena vertical 9:16 de gran impacto. Una memoria USB metálica en un plato transformándose en un plato gourmet',
+                    'Paesaggio mozzafiato': 'Vista panorámica 9:16. Un escritorio de cristal minimalista en la arena de una playa tropical al atardecer'
+                },
+                style: {
+                    'Cinematografico': 'estilo cinematográfico con profundidad de campo reducida y luz suave.',
+                    'Cyberpunk Neon': 'estilo cyberpunk con reflejos neón azul y naranja y ambiente futurista.',
+                    'Tropicale Paradisiaco': 'en un ambiente tropical paradisíaco con luz dorada del atardecer.',
+                    'Minimal Tech': 'estética tech minimalista, líneas limpias e iluminación de estudio.',
+                    'Fotorealistico 8K': 'detalles hiperrealistas en calidad 8k con iluminación natural.'
+                },
+                quotes: [
+                    '"De las ideas digitales a resultados reales. Haz realidad tu visión."',
+                    '"Inserta la visión, sirve la excelencia. Crea cada día."',
+                    '"Nutre tu mente con grandes proyectos y resultados concretos."',
+                    '"Transforma simples datos en una obra maestra extraordinaria."',
+                    '"Trabaja desde donde quieras. La libertad es tu mejor herramienta."'
+                ]
+            },
+            fr: {
+                subj: {
+                    'Workspace moderno': 'Vidéo verticale 9:16 haute résolution. Un espace de travail moderne avec écrans holographiques transparents',
+                    'Caffè e Creatività': 'Plan macro vertical 9:16. Une tasse d espresso en céramique d où des particules lumineuses s élèvent de la vapeur',
+                    'Trasformazione Tech': 'Scène verticale 9:16 spectaculaire. Une clé USB métallique sur une assiette se transformant en plat gastronomique',
+                    'Paesaggio mozzafiato': 'Vue panoramique 9:16. Un bureau en verre minimaliste sur le sable d une plage tropicale au coucher du soleil'
+                },
+                style: {
+                    'Cinematografico': 'style cinématographique avec faible profondeur de champ et éclairage doux.',
+                    'Cyberpunk Neon': 'style cyberpunk avec des reflets néon bleu et orange et une ambiance futuriste.',
+                    'Tropicale Paradisiaco': 'dans un cadre tropical paradisiaque sous la lumière dorée du coucher de soleil.',
+                    'Minimal Tech': 'esthétique tech minimale, lignes épurées et éclairage studio.',
+                    'Fotorealistico 8K': 'détails hyperréalistes en qualité 8k avec éclairage naturel.'
+                },
+                quotes: [
+                    '"Des idées numériques aux résultats réels. Transformez votre vision en réalité."',
+                    '"Insérez la vision, servez l excellence. Créez chaque jour."',
+                    '"Nourrissez votre esprit de grands projets et de résultats concrets."',
+                    '"Transformez une simple donnée en un chef-d œuvre remarquable."',
+                    '"Travaillez d où vous voulez. La liberté est votre outil le plus puissant."'
+                ]
+            }
+        };
+
+        const i18n = {
+            it: {
+                subtitle: "Generatore di Prompt Multilingua",
+                btnHelp: "Guida Utente",
+                btnWa: "Canale WhatsApp",
+                step1Title: "<span class='dot-cyan'></span> 1. Piattaforma Target",
+                step2Title: "<span class='dot-orange'></span> 2. Stile Visivo & Atmosfera",
+                step3Title: "<span class='dot-cyan'></span> 3. Soggetto Principale",
+                customPromptLabel: "✍️ La Tua Idea o Prompt Personalizzato:",
+                style1: "🎬 Cinematografico",
+                style2: "🤖 Cyberpunk Neon",
+                style3: "🌴 Paradisiaco",
+                style4: "💻 Minimal Tech",
+                style5: "📸 Fotorealistico 8K",
+                subj1: "🖥️ Postazione Tech",
+                subj2: "☕ Caffè & Idee",
+                subj3: "⚡ Magia Digitale",
+                subj4: "🌅 Paradiso Naturale",
+                placeholderCustom: "Scrivi qui la tua idea originale o i dettagli specifici...",
+                btnGenerate: "⚡ Genera Prompt Completo",
+                outTitle: "Prompt Generato",
+                labelVisual: "VISUALE / SCENA:",
+                labelQuote: "FRASE MOTIVAZIONALE DA SOVRAPPORRE:",
+                btnCopy: "📋 Copia Tutto negli Appunti",
+                presetsTitle: "🔥 Modelli Pronti",
+                p1T: "1. Chiavetta USB Magica",
+                p1D: "Una chiavetta USB futuristica appoggiata su un piatto che si trasforma in una pietanza...",
+                p2T: "2. L'Angolo di Paradiso Digitale",
+                p2D: "Una scrivania minimale di vetro posizionata su una spiaggia tropicale al tramonto...",
+                p3T: "3. Tazzina di Caffè & Particelle",
+                p3D: "Una tazzina di caffè espresso in ceramica dove dal vapore sorgono particelle luminose...",
+                toast: "✓ Contenuto copiato negli appunti!",
+                modalTitle: "📖 Guida Utente - Prompt Generator Lab",
+                gStep1T: "Scegli la Piattaforma e lo Stile",
+                gStep1D: "Seleziona dove pubblicherai il contenuto (es. TikTok, Reel) e l'atmosfera visiva (es. Cinematografico, Cyberpunk Neon, Tropicale).",
+                gStep2T: "Personalizza il Soggetto o Scrivi la Tua Idea",
+                gStep2D: "Digita la tua idea direttamente nella casella di testo 'La Tua Idea' oppure scegli uno dei soggetti predefiniti e usa i tag rapidi.",
+                gStep3T: "Scegli la Lingua Preferita",
+                gStep3D: "Usa il selettore in alto a destra per cambiare lingua in qualsiasi momento (Italiano, Inglese, Spagnolo, Francese). Tutto l'editor e il prompt si aggiorneranno all'istante!",
+                gStep4T: "Genera e Copia",
+                gStep4D: "Clicca su 'Genera Prompt Completo', premi 'Copia Tutto' e incolla il testo direttamente nella tua app AI preferita (es. Leonardo, Bing, Veo, Runway).",
+                gCloseBtn: "Capito, iniziamo!"
+            },
+            en: {
+                subtitle: "Multilingual Prompt Generator",
+                btnHelp: "User Guide",
+                btnWa: "WhatsApp Channel",
+                step1Title: "<span class='dot-cyan'></span> 1. Target Platform",
+                step2Title: "<span class='dot-orange'></span> 2. Visual Style & Vibe",
+                step3Title: "<span class='dot-cyan'></span> 3. Main Subject",
+                customPromptLabel: "✍️ Your Idea or Custom Prompt:",
+                style1: "🎬 Cinematic",
+                style2: "🤖 Cyberpunk Neon",
+                style3: "🌴 Paradise Beach",
+                style4: "💻 Minimal Tech",
+                style5: "📸 Photorealistic 8K",
+                subj1: "🖥️ Tech Setup",
+                subj2: "☕ Coffee & Ideas",
+                subj3: "⚡ Digital Magic",
+                subj4: "🌅 Natural Paradise",
+                placeholderCustom: "Write your custom idea or prompt details here...",
+                btnGenerate: "⚡ Generate Full Prompt",
+                outTitle: "Generated Prompt",
+                labelVisual: "VISUAL / SCENE:",
+                labelQuote: "OVERLAY MOTIVATIONAL QUOTE:",
+                btnCopy: "📋 Copy All to Clipboard",
+                presetsTitle: "🔥 Ready Presets",
+                p1T: "1. Magic USB Flash Drive",
+                p1D: "A futuristic USB drive placed on a plate transforming into a gourmet dish...",
+                p2T: "2. Digital Paradise Corner",
+                p2D: "A minimal glass desk placed on a tropical beach at sunset...",
+                p3T: "3. Coffee Cup & Particles",
+                p3D: "An espresso ceramic cup where glowing particles rise from the steam...",
+                toast: "✓ Content copied to clipboard!",
+                modalTitle: "📖 User Guide - Prompt Generator Lab",
+                gStep1T: "Select Platform and Style",
+                gStep1D: "Choose where you will publish (e.g. TikTok, Reels) and the visual vibe (e.g. Cinematic, Cyberpunk Neon, Tropical).",
+                gStep2T: "Customize or Type Your Own Idea",
+                gStep2D: "Type your custom prompt in 'Your Idea' text box or select a base subject and quick tags.",
+                gStep3T: "Choose Preferred Language",
+                gStep3D: "Use the selector in the top right to switch language anytime (Italian, English, Spanish, French). Everything updates instantly!",
+                gStep4T: "Generate and Copy",
+                gStep4D: "Click 'Generate Full Prompt', hit 'Copy All' and paste directly into your favorite AI tool (e.g. Leonardo, Bing, Veo, Runway).",
+                gCloseBtn: "Got it, let's start!"
+            },
+            es: {
+                subtitle: "Generador de Prompts Multilingüe",
+                btnHelp: "Guía de Usuario",
+                btnWa: "Canal WhatsApp",
+                step1Title: "<span class='dot-cyan'></span> 1. Plataforma Objetivo",
+                step2Title: "<span class='dot-orange'></span> 2. Estilo Visual y Ambiente",
+                step3Title: "<span class='dot-cyan'></span> 3. Sujeto Principal",
+                customPromptLabel: "✍️ Tu Idea o Prompt Personalizado:",
+                style1: "🎬 Cinematográfico",
+                style2: "🤖 Cyberpunk Neón",
+                style3: "🌴 Paraíso Tropical",
+                style4: "💻 Minimal Tech",
+                style5: "📸 Fotorrealista 8K",
+                subj1: "🖥️ Setup Tecnológico",
+                subj2: "☕ Café ed Ideas",
+                subj3: "⚡ Magia Digital",
+                subj4: "🌅 Paraíso Natural",
+                placeholderCustom: "Escribe aquí tu idea original o detalles específicos...",
+                btnGenerate: "⚡ Generar Prompt Completo",
+                outTitle: "Prompt Generado",
+                labelVisual: "VISUAL / ESCENA:",
+                labelQuote: "FRASE MOTIVACIONAL PARA SUPERPONER:",
+                btnCopy: "📋 Copiar Todo al Portapapeles",
+                presetsTitle: "🔥 Plantillas Listas",
+                p1T: "1. Memoria USB Mágica",
+                p1D: "Una memoria USB futurista en un plato que se transforma en un plato gourmet...",
+                p2T: "2. Rincón de Paraíso Digital",
+                p2D: "Un escritorio de cristal colocado en una playa tropical al atardecer...",
+                p3T: "3. Taza de Café y Partículas",
+                p3D: "Una taza de café expreso donde del vapor surgen partículas luminosas...",
+                toast: "✓ ¡Contenido copiado al portapapeles!",
+                modalTitle: "📖 Guía de Usuario - Prompt Generator Lab",
+                gStep1T: "Elige Plataforma y Estilo",
+                gStep1D: "Selecciona dónde publicarás (ej. TikTok, Reels) y el estilo visual (ej. Cinematográfico, Cyberpunk Neón, Tropical).",
+                gStep2T: "Personaliza o Escribe Tu Idea",
+                gStep2D: "Escribe tu idea en la casilla de texto o elige un sujeto base y usa etiquetas rápidas.",
+                gStep3T: "Elige tu Idioma Preferido",
+                gStep3D: "Usa el selector superior para cambiar de idioma en cualquier momento. ¡Todo se actualiza al instante!",
+                gStep4T: "Genera y Copia",
+                gStep4D: "Haz clic en 'Generar Prompt Completo', pulsa 'Copiar Todo' e pégalo directamente en tu app de IA favorita.",
+                gCloseBtn: "¡Entendido, empecemos!"
+            },
+            fr: {
+                subtitle: "Générateur de Prompts Multilingue",
+                btnHelp: "Guide Utilisateur",
+                btnWa: "Chaîne WhatsApp",
+                step1Title: "<span class='dot-cyan'></span> 1. Plateforme Cible",
+                step2Title: "<span class='dot-orange'></span> 2. Style Visuel & Ambiance",
+                step3Title: "<span class='dot-cyan'></span> 3. Sujet Principal",
+                customPromptLabel: "✍️ Votre Idée ou Prompt Personnalisé:",
+                style1: "🎬 Cinématographique",
+                style2: "🤖 Cyberpunk Néon",
+                style3: "🌴 Paradis Tropical",
+                style4: "💻 Tech Minimal",
+                style5: "📸 Photoréaliste 8K",
+                subj1: "🖥️ Espace Tech",
+                subj2: "☕ Café & Idées",
+                subj3: "⚡ Magie Numérique",
+                subj4: "🌅 Paradis Naturel",
+                placeholderCustom: "Écrivez ici votre idée originale ou détails spécifiques...",
+                btnGenerate: "⚡ Générer Prompt Complet",
+                outTitle: "Prompt Généré",
+                labelVisual: "VISUEL / SCÈNE:",
+                labelQuote: "CITATION MOTIVATIONNELLE À SUPERPOSER:",
+                btnCopy: "📋 Tout Copier dans le Presse-papier",
+                presetsTitle: "🔥 Modèles Prêts",
+                p1T: "1. Clé USB Magique",
+                p1D: "Une clé USB futuriste posée sur une assiette se transformant en plat gourmet...",
+                p2T: "2. Coin de Paradis Numérique",
+                p2D: "Un bureau en verre minimaliste sur une plage tropicale au coucher du soleil...",
+                p3T: "3. Tasse de Café & Particules",
+                p3D: "Une tasse d'espresso où des particules lumineuses s'élèvent de la vapeur...",
+                toast: "✓ Contenu copié dans le presse-papier!",
+                modalTitle: "📖 Guide Utilisateur - Prompt Generator Lab",
+                gStep1T: "Choisissez Plateforme et Style",
+                gStep1D: "Sélectionnez la plateforme (ex. TikTok, Reels) et l'ambiance visuelle (ex. Cinématographique, Cyberpunk Néon).",
+                gStep2T: "Personnalisez ou Écrivez Votre Idée",
+                gStep2D: "Saisissez votre idée dans le champ 'Votre Idée' ou sélectionnez un sujet de base.",
+                gStep3T: "Choisissez votre Langue",
+                gStep3D: "Utilisez le sélecteur en haut à droite pour changer de langue à tout moment. Tout se met à jour instantanément!",
+                gStep4T: "Générez et Copiez",
+                gStep4D: "Cliquez sur 'Générer Prompt Complet', appuyez sur 'Tout Copier' et collez dans votre outil IA préféré.",
+                gCloseBtn: "Compris, c'est parti!"
+            }
+        };
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const text = i18n[lang];
+
+            document.getElementById('ui-subtitle').innerText = text.subtitle;
+            document.getElementById('ui-btn-help').innerText = text.btnHelp;
+            document.getElementById('ui-btn-wa').innerText = text.btnWa;
+            document.getElementById('ui-step1-title').innerHTML = text.step1Title;
+            document.getElementById('ui-step2-title').innerHTML = text.step2Title;
+            document.getElementById('ui-step3-title').innerHTML = text.step3Title;
+            document.getElementById('ui-custom-prompt-label').innerText = text.customPromptLabel;
+
+            document.getElementById('ui-style-1').innerText = text.style1;
+            document.getElementById('ui-style-2').innerText = text.style2;
+            document.getElementById('ui-style-3').innerText = text.style3;
+            document.getElementById('ui-style-4').innerText = text.style4;
+            document.getElementById('ui-style-5').innerText = text.style5;
+
+            document.getElementById('ui-subj-1').innerText = text.subj1;
+            document.getElementById('ui-subj-2').innerText = text.subj2;
+            document.getElementById('ui-subj-3').innerText = text.subj3;
+            document.getElementById('ui-subj-4').innerText = text.subj4;
+
+            document.getElementById('custom-details').placeholder = text.placeholderCustom;
+            document.getElementById('ui-btn-generate').innerText = text.btnGenerate;
+            document.getElementById('ui-out-title').innerText = text.outTitle;
+            document.getElementById('ui-label-visual').innerText = text.labelVisual;
+            document.getElementById('ui-label-quote').innerText = text.labelQuote;
+            document.getElementById('ui-btn-copy').innerText = text.btnCopy;
+            document.getElementById('ui-presets-title').innerText = text.presetsTitle;
+
+            document.getElementById('ui-preset-1-t').innerText = text.p1T;
+            document.getElementById('ui-preset-1-d').innerText = text.p1D;
+            document.getElementById('ui-preset-2-t').innerText = text.p2T;
+            document.getElementById('ui-preset-2-d').innerText = text.p2D;
+            document.getElementById('ui-preset-3-t').innerText = text.p3T;
+            document.getElementById('ui-preset-3-d').innerText = text.p3D;
+
+            document.getElementById('toast').innerText = text.toast;
+
+            // Modal
+            document.getElementById('guide-modal-title').innerText = text.modalTitle;
+            document.getElementById('g-step1-t').innerText = text.gStep1T;
+            document.getElementById('g-step1-d').innerText = text.gStep1D;
+            document.getElementById('g-step2-t').innerText = text.gStep2T;
+            document.getElementById('g-step2-d').innerText = text.gStep2D;
+            document.getElementById('g-step3-t').innerText = text.gStep3T;
+            document.getElementById('g-step3-d').innerText = text.gStep3D;
+            document.getElementById('g-step4-t').innerText = text.gStep4T;
+            document.getElementById('g-step4-d').innerText = text.gStep4D;
+            document.getElementById('g-close-btn').innerText = text.gCloseBtn;
+
+            generatePrompt();
+        }
+
+        function setPlatform(btn, platform) {
+            selectedPlatform = platform;
+            document.querySelectorAll('.card:nth-child(1) .opt-btn').forEach(b => b.classList.remove('active-cyan'));
+            btn.classList.add('active-cyan');
+            updateBadge();
+        }
+
+        function setStyle(btn, style) {
+            selectedStyle = style;
+            document.querySelectorAll('.card:nth-child(2) .opt-btn').forEach(b => b.classList.remove('active-orange'));
+            btn.classList.add('active-orange');
+            updateBadge();
+        }
+
+        function setSubjectType(btn, subjectType) {
+            selectedSubject = subjectType;
+            document.querySelectorAll('.card:nth-child(3) .opt-btn').forEach(b => b.classList.remove('active-cyan'));
+            btn.classList.add('active-cyan');
+            generatePrompt();
+        }
+
+        function appendDetail(text) {
+            const field = document.getElementById('custom-details');
+            if (field.value.trim() === '') {
+                field.value = text;
+            } else {
+                field.value += ', ' + text;
+            }
+            generatePrompt();
+        }
+
+        function updateBadge() {
+            document.getElementById('active-tag').innerText = `${selectedPlatform} • ${selectedStyle}`;
+        }
+
+        function generatePrompt() {
+            const currentTemplate = templates[currentLang] || templates['it'];
+            const baseSubject = currentTemplate.subj[selectedSubject] || currentTemplate.subj['Workspace moderno'];
+            const styleDesc = currentTemplate.style[selectedStyle] || '';
+            const customDetails = document.getElementById('custom-details').value.trim();
+
+            let fullPrompt = "";
+            if (customDetails !== '') {
+                fullPrompt = `${customDetails}, ${styleDesc}`;
+            } else {
+                fullPrompt = `${baseSubject}, ${styleDesc}`;
+            }
+
+            const quotesList = currentTemplate.quotes;
+            const randomQuote = quotesList[Math.floor(Math.random() * quotesList.length)];
+
+            document.getElementById('output-prompt').innerText = fullPrompt;
+            document.getElementById('output-quote').innerText = randomQuote;
+        }
+
+        function copyAll() {
+            const promptText = document.getElementById('output-prompt').innerText;
+            const quoteText = document.getElementById('output-quote').innerText;
+            const fullText = `PROMPT:\n${promptText}\n\nQUOTE / TEXT:\n${quoteText}`;
+
+            const textarea = document.createElement('textarea');
+            textarea.value = fullText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        function loadPreset(index) {
+            const presetPrompt = [
+                "Video verticale 9:16 in stile cinematografico. Una mano appoggia delicatamente una chiavetta USB metallica al centro di un piatto scuro. Al contatto si trasforma in una pietanza scenografica con luci fluo azzurro e arancione.",
+                "Inquadratura verticale 9:16. Una scrivania moderna in vetro posizionata sulla sabbia di una spiaggia tropicale al tramonto. Mare cristallino e palme che fanno da cornice.",
+                "Primo piano verticale 9:16. Una tazzina di caffè in ceramica bianca. Dal vapore si sprigionano particelle luminose e nodi digitali azzurri."
+            ];
+            const presetQuotes = [
+                '"Trasforma un semplice dato in un capolavoro. Il futuro si crea ora."',
+                '"Lavora da dove vuoi. Crea ciò che ami."',
+                '"Nutri la tua mente con grandi progetti ogni mattina."'
+            ];
+
+            document.getElementById('output-prompt').innerText = presetPrompt[index] || presetPrompt[0];
+            document.getElementById('output-quote').innerText = presetQuotes[index] || presetQuotes[0];
+        }
+
+        // Funzioni Modal Guida Utente
+        function openModal() {
+            document.getElementById('help-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('help-modal').classList.remove('active');
+        }
+
+        function closeModalOnOverlay(event) {
+            if (event.target.id === 'help-modal') {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
